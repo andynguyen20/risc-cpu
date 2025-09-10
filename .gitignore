@@ -1,0 +1,47 @@
+# Vivado build and temp files
+*.jou
+*.log
+*.str
+*.cache/
+*.webtalk/
+*.hw/
+*.runs/
+*.sim/
+*.ip_user_files/
+*.xsim/
+*.Xil/
+*.gen/
+*.backup/
+*.tmp/
+*.wdb
+*.pb
+*.tcl
+*.dcp     
+*.xci
+*.project
+*.sdk
+*.sdb
+*.rpx
+*.ini
+*.bat           
+*.exe
+*.obj
+*.dbg
+*.type
+*.svtype
+*.rtti
+*.reloc
+*.xdbg
+*.txt
+*.rlx
+*.xpr
+
+# Auto-generated simulation or report files
+*.vcd
+*.saif
+*.xml
+*.html
+
+# OS files
+.DS_Store
+Thumbs.db
