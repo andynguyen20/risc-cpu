@@ -8,7 +8,7 @@ module instruction_memory(
     reg [31:0] instruction_mem [63:0];
     
     initial begin
-        $readmemb("beq_demo.mem", instruction_mem);
+        $readmemb("jal_demo.mem", instruction_mem);
     end 
     
     assign read_data = instruction_mem[addr[31:2]]; // byte addressing
