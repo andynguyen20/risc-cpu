@@ -1,6 +1,6 @@
 # RISC CPU
 
-A minimal Reduced Instruction Set Computer (RISC) CPU inspired by Berkeley's RISC-V instruction set architecture
+A minimal 32-bit Reduced Instruction Set Computer (RISC) CPU inspired by Berkeley's RISC-V instruction set architecture
 
 ## Table of Contents
 1. [Architecture](#architecture)
@@ -242,3 +242,4 @@ As you can see here, the program counter immediately jumps from the first instru
 # Future Extensions
 
 As you may have noticed, this is a minimal reduced instruction set architecture compared to the actual RISC-V ISA which includes many more instructions. I'm currently working on the pipelined version of this cpu, but in terms of future plans I actually want to do the RTL-To-GDSII flow for the pipelined version of this processor before actually implementing the entire RV32I ISA.
+
