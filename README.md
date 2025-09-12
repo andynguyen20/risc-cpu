@@ -233,7 +233,7 @@ rd = PC+4; PC += imm
 32'b0_0000000100_0_00000000_00001_1101111 // jal  x1, +8
 ```
 
-In this example, we jump and link immediately from the first instruction address (0) to an offset of 8 bytes and save the next instruction after the 0, (4 bytes) into register 1. (This instruction also uses a left shift for the offset incremented by the program counter, take a look at bit 23, it represents a 4-byte address, but our program uses 8-bytes. This is the same idea with the last instruction where the lowest bit in the immediate field (1) is shifted left so that the smallest increment you can put into the program counter is 4 bytes). Check out the machine code [**here**](https://github.com/andynguyen20/risc-cpu/blob/main/risc-cpu/risc-cpu.srcs/sources_1/new/jal_demo.mem) 
+In this example, we jump and link immediately from the first instruction address (0) to an offset of 8 bytes and save the next instruction after the 0, (0x4) into register 1. (This instruction also uses a left shift for the offset incremented by the program counter, take a look at bit 23, it represents a 4-byte address, but our program uses 8-bytes. This is the same idea with the last instruction where the lowest bit in the immediate field (1) is shifted left so that the smallest increment you can put into the program counter is 4 bytes). Check out the machine code [**here**](https://github.com/andynguyen20/risc-cpu/blob/main/risc-cpu/risc-cpu.srcs/sources_1/new/jal_demo.mem) 
 
 ![alt text](img/waveform12.png)
 
@@ -242,4 +242,5 @@ As you can see here, the program counter immediately jumps from the first instru
 # Future Extensions
 
 As you may have noticed, this is a minimal reduced instruction set architecture compared to the actual RISC-V ISA which includes many more instructions. I'm currently working on the pipelined version of this cpu, but in terms of future plans I actually want to do the RTL-To-GDSII flow for the pipelined version of this processor before actually implementing the entire RV32I ISA.
+
 
