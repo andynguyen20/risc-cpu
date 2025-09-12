@@ -15,8 +15,8 @@ The architecture of this CPU uses several key components that allow it to perfor
 - **Control Unit**: The control unit decodes the instruction opcode and generates control signals to guide data flow, ALU operations, memory access and specific register updates. 
 - **Register File**: The register file stores the 32 general purpose registers (with the exception of register x0 being hardwired to 0). It reads from two source registers at any given moment and writes into one destination register per clock cycle.
 - **Extend Unit**: The extend unit extracts and formats the immediate fields for I-, S-, B- and J-type instructions. It uses sign-extension to cover the full 32-bits and can use up to 11-20 bit numbers for the respective instructions.
-- **Instruction Memory**: The instruction memory holds the programs instructions. It reads the instruction address from the program counter and provides the corresponding instruction held at that address.
-- **Data Memory**: The data memory provides storage for load and store operations. Data can be read and written from memory based on the control signals and effective addresses.
+- **Instruction Memory**: The instruction memory holds the programs instructions. It reads the instruction address from the program counter and provides the corresponding instruction held at that address. The instruction memory is byte-addressable, meaning each instruction location responds to four bytes holdig the entire 32-bit word split. 
+- **Data Memory**: The data memory provides storage for load and store operations. Data can be read and written from memory based on the control signals and effective addresses. The data memory is also byte-addressable and it uses little-endianness to store bytes, meaning your 32-bit word gets split into four bytes and stored in four different byte addresses in memory where the lowest byte of the word goes in the lowest byte of memory and so on. 
 
 # Instructions
 
@@ -54,7 +54,7 @@ The CPU currently supports R-, I-, S-, B-, and J-type instructions.
 Adds the contents of source register 2 to source register 1 and stores it in a destination register. 
 
 **Example Usage:**
-```pseudocode
+```verilog
 rd = rs1 + rs2
 ```
 ```verilog
@@ -72,7 +72,7 @@ And the result 12 is stored into memory address 0.
 Subtracts the contents of source register 1 with the contents of source register 2 and stores it in a  destination register.
 
 **Example Usage:**
-```pseudocode
+```verilog
 rd = rs1 - rs2
 ```
 ```verilog
@@ -90,7 +90,7 @@ and the result 5 is stored into memory address 4.
 Performs a bitwise OR on the contents of source register 1 and source register 2 and stores it in a destination register.
 
 **Example Usage:**
-```pseudocode
+```verilog
 rd = rs1 | rs2
 ```
 ```verilog
@@ -108,7 +108,7 @@ and the result of the bitwise OR 12'b000011111100 (upper 20 bits zero) is stored
 Performs a bitwise AND on the contents of source register 1 and source register 2 and stores it in a destination register.
 
 **Example Usage:**
-```pseudocode
+```verilog
 rd = rs1 & rs2
 ```
 ```verilog
@@ -126,7 +126,7 @@ and  the result of the bitwise AND 12'b000011000000 upper (20 bits zero) is stor
 Compares the contents of source register 1 and source register 2. If the value in source register 1 is less than the value in source register 2, the destination register is set to 1; otherwise it is set to 0.
 
 **Example Usage:**
-```pseudocode
+```verilog
 rd = (rs1 < rs2) ? 1 : 0
 ```
 ```verilog
@@ -150,7 +150,7 @@ and voila, the resultant 0 from source register 1 being greater than source regi
 Adds an immediate 12 bit number into source register 1 and stores the content in the destination register. RISC-V uses sign-extension when handling it's immediates, so the 12th bit will fill the upper 20 bits of the 32 bit number to handle two's complement signed numbers.
 
 **Example Usage:**
-```pseudocode
+```verilog
 rd = rs1 + imm
 ```
 ```verilog
@@ -172,7 +172,7 @@ and the 12'b111111111111 with the MSB/sign '1' being extended the entire 32 bits
 Stores a 32-bit word from source register 2 into a memory address using source register one and an immediate to select an address. 
 
 **Example Usage:**
-```pseudocode
+```verilog
 M[rs1+imm][0:31] = rs2[0:31]
 ```
 ```verilog
@@ -190,7 +190,7 @@ And the sign extended r1 is stored in memory address 0.
 Loads a 32-bit word from memory into a destination register using source register one and an immediate to calculate the address
 
 **Example Usage:**
-```pseudocode
+```verilog
 rd = M[rs1+imm][0:31]
 ```
 ```verilog
@@ -205,17 +205,17 @@ We can notice here at the next positive clock edge, the value in r1 is loaded in
 
 ### BEQ
 
-Branches to another instruction by adding a 13-bit sign-extended immediate to the program counter if the condition of source register 1 being equal to source register 2 is true.
+Branches to another instruction by adding a 13-bit sign-extended immediate to the program counter if the condition of source register 1 being equal to source register 2 is true. 
 
 **Example Usage:**
-```pseudocode
+```verilog
 if(rs1 == rs2) PC += imm
 ```
 ```verilog
 32'b0_000000_00010_00001_000_01000_1100011 // beq x1, x2, +8
 ```
 
-In this example, we add immediate 5 to both register 1 and register 2 and we use the branch if equal instruction to branch the 8 byte offset and skip the next instruction. Check out the machine code [**here**](https://github.com/andynguyen20/risc-cpu/blob/main/risc-cpu/risc-cpu.srcs/sources_1/new/beq_demo.mem) 
+In this example, we add immediate 5 to both register 1 and register 2 and we use the branch if equal instruction to branch the 8 byte offset (This instruction uses a left shift for the offset incremented into the program counter, take a look at bit 10 in the example. The number field uses 4 bytes, but it will left shift one and sign-extend to cover the immediate so it's really 8 bytes represented as a 13-bit hexadecimal immediate. This is mainly due to RISC-V's use of byte-addressing and little-endianness, the program counter can only count in bytes, so if you put something in bits 1 and 0, 0 gets removed in the machine code and bit 1 gets shifted left so a single byte is the lowest number you can increment by) and skip the next instruction. Check out the machine code [**here**](https://github.com/andynguyen20/risc-cpu/blob/main/risc-cpu/risc-cpu.srcs/sources_1/new/beq_demo.mem) 
 
 ![alt text](img/waveform11.png)
 
@@ -223,9 +223,17 @@ As you can see here, the program counters register increments by 2 bytes instead
 
 ### JAL
 
-Jumps to another instruction address by adding an immediate value into the program counter and links the next instruction from the instruction address of the jump by incrmenting the program counter by 4 bytes.
+Jumps to another instruction address by adding an immediate value into the program counter and links the next instruction from the instruction address of the jump by incrementing the program counter by 4 bytes. 
 
-In this example, we jump and link immediately from the first instruction address (0) to an offset of 8 bytes and save the next instruction after the 0, (4 bytes) into register 1. Check out the machine code [**here**](https://github.com/andynguyen20/risc-cpu/blob/main/risc-cpu/risc-cpu.srcs/sources_1/new/jal_demo.mem) 
+**Example Usage:**
+```verilog
+rd = PC+4; PC += imm
+```
+```verilog
+32'b0_0000000100_0_00000000_00001_1101111 // jal  x1, +8
+```
+
+In this example, we jump and link immediately from the first instruction address (0) to an offset of 8 bytes and save the next instruction after the 0, (4 bytes) into register 1. (This instruction also uses a left shift for the offset incremented by the program counter, take a look at bit 23, it represents a 4-byte address, but our program uses 8-bytes. This is the same idea with the last instruction where the lowest bit in the immediate field (1) is shifted left so that the smallest increment you can put into the program counter is 4 bytes). Check out the machine code [**here**](https://github.com/andynguyen20/risc-cpu/blob/main/risc-cpu/risc-cpu.srcs/sources_1/new/jal_demo.mem) 
 
 ![alt text](img/waveform12.png)
 
