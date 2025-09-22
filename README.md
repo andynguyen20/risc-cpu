@@ -49,7 +49,7 @@ The CPU currently supports R-, I-, S-, B-, and J-type instructions.
 
 # Example Instructions
 
-Note: If you plan on tracing the waveform images for each instruction from this README, please check the .mem file for each respective instruction (which are linked with "Check out the machine code **here**") to have some context of what I'm explaining. 
+Note: If you plan on tracing the waveform images for each instruction from this README, please check the .mem file for each respective instruction example (which are linked with "Check out the machine code **here**") to have some context of what I'm explaining. These files contain the cpu's machine code for the instruction I'm implementing and I've added comments beside each instruction with it's RISC-V Assembly format. 
 
 ### ADD
 
@@ -244,6 +244,7 @@ As you can see here, the program counter immediately jumps from the first instru
 # Future Extensions
 
 As you may have noticed, this is a minimal reduced instruction set architecture compared to the actual RISC-V ISA which includes many more instructions. I'm currently working on the pipelined version of this cpu, but in terms of future plans I actually want to do the RTL-To-GDSII flow for the pipelined version of this processor before actually implementing the entire RV32I ISA.
+
 
 
 
