@@ -135,13 +135,13 @@ rd = (rs1 < rs2) ? 1 : 0
 32'b0000000_00100_00101_010_00110_0110011 // slt x6, x5, x4
 ```
 
-In this example, we initialize r4 = 99 and r5 = 98. We are going to do two SLT operations to prove both cases of the destination register being set to 1 and 0. This first example we set source register 2 as r4 = 99 and source register 1 as r5 = 98 and store it into data address 0. Check out the machine code [**here**](https://github.com/andynguyen20/risc-cpu/blob/main/risc-cpu/risc-cpu.srcs/sources_1/new/slt_demo.mem) 
+In this example, we initialize r4 = 99 and r5 = 98. We are going to do two SLT operations to prove both cases of the destination register being set to 1 and 0. This first example we set source register 2 as r4 = 99 and source register 1 as r5 = 98 and use the comparison rs2 > rs1 and store it into data address 0. Check out the machine code [**here**](https://github.com/andynguyen20/risc-cpu/blob/main/risc-cpu/risc-cpu.srcs/sources_1/new/slt_demo.mem) 
 
 ![alt text](img/waveform5.png)
 
 and the result is 1 stored in memory address 0.
 
-Now we switch the values of source register 2 and source register 1 so rs1 > rs2 and store it in address 4
+Now we switch the order of source register 2 and source register 1 in the comparison to rs1 > rs2 and store it in address 4
 
 ![alt text](img/waveform6.png)
 
